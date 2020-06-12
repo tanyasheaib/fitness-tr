@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru" manifest="manifest.appcache">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script>"use strict";</script>
+    <link rel="shortcut icon" type="image/x-icon" href="logos/icon32.png"/>
+    <link rel="stylesheet" type="text/css" href="css/icons.css"/>
+    <link rel="stylesheet" type="text/css" href="css/principal.css"/>
+    <link rel="stylesheet" type="text/css" href="css/header.css"/>
+    <link rel="stylesheet" type="text/css" href="css/toolbar.css"/>
+    <link rel="stylesheet" type="text/css" href="css/sidebar.css"/>
+    <link rel="stylesheet" type="text/css" href="css/menulist.css"/>
+    <link rel="stylesheet" type="text/css" href="css/pagebody.css"/>
+    <link rel="stylesheet" type="text/css" href="css/table.css"/>
+    <link rel="stylesheet" type="text/css" href="css/externalLib/pikaday.css"/>
+    <script type="text/javascript" src="js/setUp.js"></script>
+    <script type="text/javascript" src="js/toolbar.js"></script>
+    <script type="text/javascript" src="js/sidebar.js"></script>
+    <script type="text/javascript" src="js/menulist.js"></script>
+    <script type="text/javascript" src="js/pagebody.js"></script>
+    <script type="text/javascript" src="js/backupRestore.js"></script>
+    <script type="text/javascript" src="js/createTables.js"></script>
+    <script type="text/javascript" src="js/fillForms.js"></script>
+    <script type="text/javascript" src="js/showGraph.js"></script>
+    <script type="text/javascript" src="js/bmiCalculator.js"></script>
+    <script type="text/javascript" src="js/externalLib/pikaday.js"></script>
+    <script type="text/javascript" src="js/externalLib/Chart.min.js"></script>
+    <script type="text/javascript" src="js/externalLib/hammer.min.js"></script>
+    <script type="text/javascript" src="js/managers/exercise.js"></script>
+    <script type="text/javascript" src="js/managers/exercisesManager.js"></script>
+    <script type="text/javascript" src="js/managers/meal.js"></script>
+    <script type="text/javascript" src="js/managers/mealsManager.js"></script>
+    <script type="text/javascript" src="js/managers/day.js"></script>
+    <script type="text/javascript" src="js/managers/daysManager.js"></script>
+    <script type="text/javascript" src="js/managers/localDB.js"></script>
+    <script type="text/javascript" src="js/managers/restriction.js"></script>
+
+    <title>Health and Fitness</title>
+</head>
+<body>
+<section id="allPage" class="principal">
+    <header>
+        <button id="sidebar_trigger" class="icon menu"></button>
+        <h1>Fitness</h1>
+    </header>
+    <div id="loadingPage" class="pagebody" aria-expanded="true" >
+        <div id="loadingBoard">
+            <img class="loadLogo" src="logos/icon128.png"/>
+            <br><p class="loadTitle">Fitness</p>
+            <div id="loadingCircle" class="loader"> <p style="display: none;">for compatibility</p></div>
+            <br><p class="loadingTitle">Загрузка</p>
+        </div>
+    </div>
+    <div id="homePage" class="pagebody" aria-owns="addToolbar"  >
+        <div class="generalBoard" >
+            <h2> Today </h2>
+            <p id="notificationHome"></p>
+            <div id="homeBoard">
+            </div>
+        </div>
+    </div>
+    <div id="pageMeals" class="pagebody" aria-owns="addNewMeal">
+        <div class="generalBoard" >
+            <div id="mealsBoard"></div>
+            </div>
+        </div>
+    </div>
+    <div id="pageExercises" class="pagebody" aria-owns="addNewExercise">
+        <div class="generalBoard" >
+            <div id="exercisesBoard">
+            </div>
+        </div>
+    </div>
+    <div id="pageDay" class="pagebody" aria-owns="addToolbar">
+        <div class="generalBoard">
+            <input style="width: 240px;" type="text" id="datepicker" value="Выберите день" title="Календарь">
+            <p id="notificationHistory"></p>
+            <div id="dayBoard">
+            </div>
+        </div>
+    </div>
+    <div id="pageGraphs" class="pagebody">
+        <div class="generalBoard" style="height: 98%">
+            Значение
+            <select id="graphType" title="">
+                <option value="protein">Белки</option>
+                <option value="carbohydrate">Углеводы</option>
+                <option value="fat">Жиры</option>
+                <option value="kcal">Калории</option>
+                <option value="multi">Все</option>
+            </select>
+            Период
+            <select id="graphNumberOfDay" title="">
+                <option value="7">7</option>
+                <option value="14">14</option>
+                <option value="30">30</option>
+                <option value="60">60</option>
+            </select> дней
+
+            <canvas id="myChart" height="80%" style="width: 100%;"></canvas>
+        </div>
+    </div>
+    <div id="pageBMI" class="pagebody" aria-owns="calculateToolbar">
+        <div class="generalBoard" >
+            <h3 style="text-align: center">Калькулятор ИМТ</h3>
+            <form id="bmiForm">
+                Ваш рост: <br><input type="text" name="height" title="Рост" placeholder="180"/>
+                <select id='heightTitle' title="units">
+                    <option value="cm">(см)</option>
+                    <option value="feet">(Фут)</option>
+                </select><br>
+                Ваш вес: <br><input type="text" name="weight" title="Вес" placeholder="75"/>
+                <select id="weightTitle" title="units">
+                    <option value="kg">(кг)</option>
+                    <option value="lbs">(фунт)</option>
+                </select>
+            </form>
+            <div id="resultBMI" style="text-shadow: 1px 2px 3px #808080;font-size: 10em;color: cadetblue;">
+            </div>
+            <h7>С помощью данного калькулятора вы можете рассчитать ваш индекс массы тела. С помощью индекса массы тела вы можете проверить соответствие между массой вашего тела и вашим ростом и узнать, имеется ли у вас избыточный вес, или же, наоборот, не страдаете ли вы недостатком веса. Чтобы рассчитать индекс массы вашего тела (ИМТ) заполните в калькуляторе поля, соответствующие значениям вашего роста и веса. Вводите значения роста и вашего веса с точностью до десятых, тогда результат вычисления будет наиболее точным.</h7>
+            <img src="css/images/1.jpg" width="500" height="500" alt="" style="border:inset 5px;" />
+        </div>
+
+    </div>
+    <div id="pageSettings" class="pagebody" aria-owns="settingsToolbar">
+        <header>
+            <button id='backSettings' class="icon day"></button>
+            <h2>Настройки</h2>
+        </header>
+        <div style="margin:0.5rem 1rem 0.5rem 1rem">
+            <h3 style="text-align: center">Васстановление/Реезервное капирование</h3>
+            <p style="text-align: center">Резервное копирование json корректно работает только на веб-браузерах и частично  на android!</p>
+            <div id="downloadVisible"></div>
+            <br>
+        </div>
+    </div>
+    <div id="editMealPage" class="pagebody" aria-owns="editToolbar">
+        <header>
+            <button id='backEditMeal' class="icon back"></button>
+            <h2>Редактировать</h2>
+        </header>
+        <div class="generalBoard" >
+            <form id="editMealForm">
+                Наименование: <br><input type="text" name="nameM" title="Наименование"/> <br>
+                Белки: <br><input type="text" name="protein" title="Белки"/> <br>
+                Углеводы: <br><input type="text" name="carbohydrate" title="Углеводы"/> <br>
+                Жиры:<br><input type="text" name="fat" title="Жиры"/> <br>
+                Калории: <br><input type="text" name="kcal" title="Калории" style="width:72%"/><button>Расчитать</button><br>
+                Способ: <br><select title="способ">
+                <option value="100g">100г</option>
+                <option value="one piece">одна часть</option>
+            </select> <br>
+                Часть дня <br><select title="Часть дня" >
+                <option value="breakfast">Завтрак</option>
+                <option value="lunch">Обед</option>
+                <option value="dinner">Ужин</option>
+                <option value="snack">Легкий</option>
+            </select>
+            </form>
+        </div>
+    </div>
+    <div id="editExercisePage" class="pagebody" aria-owns="editToolbar">
+        <header>
+            <button id='backEditExercise' class="icon back"></button>
+            <h2>Редактировать</h2>
+        </header>
+        <div class="generalBoard" >
+            <form id="editExerciseForm">
+                Наименование:<br> <input type="text" name="nameE" title="Наименование"/> <br>
+                Расход калорий:<br> <input type="text" name="kcal" title="Калории"/> <br>
+            </form>
+        </div>
+    </div>
+    <div id="editRestrictionPage" class="pagebody" aria-owns="editToolbar">
+        <header>
+            <button id='backFromRestriction' class="icon back"></button>
+            <h2>Изменить</h2>
+        </header>
+        <div class="generalBoard" >
+            <form id="editRestrictionForm">
+                Белки: <br><input type="text" name="protein" title="Protein"/> <br>
+                Углеводы: <br><input type="text" name="carbohydrate" title="Carbohydrate"/> <br>
+                Жиры:<br><input type="text" name="fat" title="Fat"/> <br>
+                Калории: <br><input type="text" name="kcal" title="kcal" style="width:72%"/>
+            </form>
+        </div>
+    </div>
+    <div id="pageMealsToAdd" class="pagebody" aria-owns="addNewMeal">
+        <header>
+            <button id='backMealsToAdd' class="icon back"></button>
+            <h2>Выбор продуктов</h2>
+        </header>
+        <div class="generalBoard" >
+            <h2>  </h2>
+            <div id="addFromMealsBoard">
+            </div>
+        </div>
+    </div>
+    <div id="pageExercisesToAdd" class="pagebody" aria-owns="addNewExercise">
+        <header>
+            <button id='backExercisesToAdd' class="icon back"></button>
+            <h2>Выбор упражнений</h2>
+        </header>
+        <div class="generalBoard" >
+            <h2>  </h2>
+            <div id="addFromExercisesBoard">
+            </div>
+        </div>
+    </div>
+    <div id="addNewMealToGlobalPage" class="pagebody" aria-owns="saveToolbar">
+        <header>
+            <button id="backNewMealToGlobalPage" class="icon back"></button>
+            <h2>Добавление продукта</h2>
+        </header>
+        <div class="generalBoard" >
+            <form id="addNewMealToGlobalForm">
+                Наименование: <br><input type="text" name="nameM" title="Наименование"/> <br>
+                Белки: <br><input type="text" name="protein" title="Белки"/> <br>
+                Углеводы: <br><input type="text" name="carbohydrate" title="Углеводы"/> <br>
+                Жиры:<br><input type="text" name="fat" title="Жиры"/> <br>
+                Калории: <br><input type="text" name="kcal" title="Калории" style="width:72%"/><button>Расчитать</button>
+                <br>
+                Способ:<br>
+                <select title="Способ">
+                    <option value="100g">100г</option>
+                    <option value="one piece">Одна часть</option>
+                </select>
+            </form>
+        </div>
+    </div>
+    <div id="addMealFromGlobalPage" class="pagebody" aria-owns="saveToolbar">
+        <header>
+            <button id="backMealFromGlobalPage" class="icon back"></button>
+            <h2>Добавление продукта</h2>
+        </header>
+        <div class="generalBoard" >
+            <form id="addMealFromGlobalForm">
+                Наименование: <br><input type="text" name="nameM" title="Наименование"/> <br>
+                Белки: <br><input type="text" name="protein" title="Белки"/> <br>
+                Углеводы: <br><input type="text" name="carbohydrate" title="Углеводы"/> <br>
+                Жиры:<br><input type="text" name="fat" title="Жиры"/> <br>
+                Калории: <br><input type="text" name="kcal" title="Калории" style="width:72%"/><button>Расчитать</button><br>
+                <button>Редактировать</button><br>
+                Часть дня: <br><select title="Часть дня">
+                <option value="breakfast">Завтрак</option>
+                <option value="lunch">Обед</option>
+                <option value="dinner">Ужин</option>
+                <option value="snack">Легкий перекус</option>
+            </select>
+                <br>
+                Количество порций: <br><input type="text" name="count" style="width:70%;" title="" value="1"/>
+                <select title="method">
+                    <option value="100g">100г</option>
+                    <option value="one piece">Одна часть</option>
+                </select>
+            </form>
+        </div>
+    </div>
+    <div id="addNewMealPage" class="pagebody" aria-owns="saveToolbar">
+        <header>
+            <button id="backNewMealPage" class="icon back"></button>
+            <h2>Добавление продуктов</h2>
+        </header>
+        <div class="generalBoard" >
+            <form id="addNewMealForm">
+                Наименование: <br><input type="text" name="nameM" title="Наименование"/> <br>
+                Белки: <br><input type="text" name="protein" title="Белки"/> <br>
+               Углеводы: <br><input type="text" name="carbohydrate" title="Углеводы"/> <br>
+                Жиры:<br><input type="text" name="fat" title="Жиры"/> <br>
+                Калории: <br><input type="text" name="kcal" title="Калории" style="width:72%"/><button>Расчитать</button><br>
+               Часть дня: <br><select title="partOfDay">
+                <option value="breakfast">Завтрак</option>
+                <option value="lunch">Обед</option>
+                <option value="dinner">Ужин</option>
+                <option value="snack">Легкий перекус</option>
+            </select>
+            </form>
+        </div>
+    </div>
+    <div id="addExercisePage" class="pagebody" aria-owns="saveToolbar">
+        <header>
+            <button id='backExercisePage' class="icon back"></button>
+            <h2>Добавить упражнение</h2>
+        </header>
+        <div class="generalBoard" >
+            <form id="addExerciseForm">
+                Наименование:<br> <input type="text" name="nameE" title="Наименование"/> <br>
+               Расход калорий на 1 кг. веса:<br> <input type="text" name="kcal" title="Калории"/> <br>
+                <br>
+                Подходов <br><input type="text" name="count" title="" value="1"/> <br>
+            </form>
+        </div>
+    </div>
+    <div id="pageAbout" class="pagebody" >
+        <div style="margin:0.5rem 1rem 0.5rem 1rem; overflow-y: auto; height: 99%;">
+            <h3 style="text-align: center">Инструкция</h3>
+         
+            <ol style="text-align:left">
+                <li><b>Питание</b>
+                    <ul>
+                        <li>Просмотр всех продуктов</li>
+                        <li>При нажатии на продукт открывается редактор продуктов</li>
+                        <li>При нажатии на заголовок таблицы выполнится сортировка продуктоав</li>
+                        <li>Добавление продуктов</li>
+                        <li>Удаление продуктов</li>
+                        <li>Обновление продуктов через редактирование</li>
+                    </ul>
+                </li>
+                <li><b>Упражнения</b>
+                    <ul>
+                        <li>Просмотр таблицы со всеми упражнениями</li>
+                        <li>При нажатии на упражнение отрывается редактор</li>
+                        <li>При нажатии на заголовок таблицы выполнится сортировка упражнений</li>
+                        <li>Добавление упражнений</li>
+                        <li>Удаление упражнения через редактор </li>
+                        <li>Обновление через редактор</li>
+                    </ul>
+                </li>
+                <li><b>Журнал</b>
+                    <ul>
+                        <li>Выбор дня с помощью календаря</li>
+                        <li>Просмотр продуктов питания и пражнений за день</li>
+                        <li>При нажатии на продукты или упражнения откроется редактор</li>
+                        <li>Добавление продуктов/упражнений или выбрать из таблиц</li>
+                        <li>Удаление продуктов/упражнений любого дня</li>
+                        <li>Обновление продуктов/упражнений</li>
+                    </ul>
+                </li>
+                <li><b>График</b>
+                    <ul>
+                        <li>Просмотр графика в соответствии с выбранными значениями</li>
+                        <li>Просмотр графика в зависимости от дней</li>
+                        <li>Просмотр всех значений</li>
+                    </ul>
+                </li>
+                <li><b>Калькулятор ИМТ</b>
+                    <ul>
+                        <li>Расчет индекса массы телаr</li>
+                    </ul>
+                </li>
+                <li><b>Настройки</b>
+                    <ul>
+                        <li>Импорт</li>
+                        <li>Экспорт </li>
+                        <li>Удаление локального хранилища</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+    </div>
+    <footer class="toolbar">
+        <menu id="addToolbar" type="toolbar">
+            <li id="addMealButton" aria-controls="pageMealsToAdd">Добавить продукт</li>
+            <li id="addExerciseButton" aria-controls="pageExercisesToAdd">Добавить упражнение</li>
+        </menu>
+        <menu id="saveToolbar" type="toolbar">
+            <li id="saveButton" class="icon add" ></li>
+        </menu>
+        <menu id="addNewMeal" type="toolbar">
+            <li id="addNewMealButton" class="icon add" > Добавить продукт</li>
+        </menu>
+        <menu id="addNewExercise" type="toolbar">
+            <li id="addNewExerciseButton" class="icon add" > Добавить упражнение</li>
+        </menu>
+        <menu id="settingsToolbar" type="toolbar">
+            <li id='uploadButton' class="icon mail_reply">
+                <input id="upJsonFile" type="file" style="display: none;">
+                Импорт
+            </li>
+            <li id='saveJsonButton' class="icon mail_forward">Экспорт</li>
+            <li id='deleteLocalButton' class="icon delete"></li>
+        </menu>
+        <menu id="editToolbar" type="toolbar">
+            <li id="deleteIconEdit" class="icon delete">Удалить</li>
+            <li id="updateIconEdit" class="icon move_file">Обновить</li>
+        </menu>
+        <menu id="calculateToolbar" type="toolbar">
+            <li id="calculateButton" class="icon sync">Рассчитать</li>
+        </menu>
+    </footer>
+</section>
+
+<section id="sidebar" class="sidebar">
+    <header style="text-align: center">
+        <h2>Меню</h2>
+    </header>
+    <div class="menulist">
+        <menu>
+            <menuitem id="homePageMenu" aria-controls="homePage" type="command" label="Главная"></menuitem>
+            <menuitem id="mealsPageMenu" aria-controls="pageMeals" type="command" label="Питание" ></menuitem>
+            <menuitem id="execisesPageMenu" aria-controls="pageExercises" type="command" label="Упражнения"></menuitem>
+            <menuitem id="daysPageMenu" aria-controls="pageDay" type="command" label="Журнал"></menuitem>
+            <menuitem id="graphsPageMenu" aria-controls="pageGraphs" type="command" label="График"></menuitem>
+            <menuitem id="pageBMIMenu" aria-controls="pageBMI" type="command" label="Калькулятор ИМТ"></menuitem>
+            <menuitem id="pageSettingsMenu" aria-controls="pageSettings" type="command" label="Настройки"></menuitem>
+            <menuitem aria-controls="pageAbout" type="command" label="Инструкция"></menuitem>
+        </menu>
+       
+    </div>
+</section>
+</body>
+</html>
